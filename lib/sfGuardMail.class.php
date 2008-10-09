@@ -15,7 +15,7 @@
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
  * @version    SVN: $Id: sfGuardMail.class.php 7636 2008-02-27 18:50:43Z fabien $
  */
-class sfGuardMail
+class sfGuardExtraMail
 {
   /**
    * send mail

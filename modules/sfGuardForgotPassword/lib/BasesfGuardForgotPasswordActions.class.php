@@ -54,7 +54,7 @@ class BasesfGuardForgotPasswordActions extends sfActions
           'subject' => 'Request to reset password',
           'message' => $message
         );
-        sfGuardMail::send($mailParams);
+        sfGuardExtraMail::send($mailParams);
 
         return $this->redirect('@sf_guard_do_password?'.http_build_query($values));
       }
@@ -108,7 +108,7 @@ class BasesfGuardForgotPasswordActions extends sfActions
       'subject' => 'Password reset successfully',
       'message' => $message
     );
-    sfGuardMail::send($mailParams);
+    sfGuardExtraMail::send($mailParams);
   }
 
   /**

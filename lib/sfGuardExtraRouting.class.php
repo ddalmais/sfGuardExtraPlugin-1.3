@@ -15,7 +15,7 @@
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
  * @version    SVN: $Id: sfGuardRouting.class.php 7636 2008-02-27 18:50:43Z fabien $
  */
-class sfGuardRouting
+class sfGuardExtraRouting
 {
   /**
    * Listens to the routing.load_configuration event.
@@ -27,9 +27,6 @@ class sfGuardRouting
     $r = $event->getSubject();
 
     // preprend our routes
-    $r->prependRoute('sf_guard_signin', '/login', array('module' => 'sfGuardAuth', 'action' => 'signin'));
-    $r->prependRoute('sf_guard_signout', '/logout', array('module' => 'sfGuardAuth', 'action' => 'signout'));
-
     $r->prependRoute('sf_guard_password', '/request_password', array('module' => 'sfGuardForgotPassword', 'action' => 'password'));
     $r->prependRoute('sf_guard_do_password', '/request_password/do', array('module' => 'sfGuardForgotPassword', 'action' => 'request_reset_password'));
     $r->prependRoute('sf_guard_forgot_password_reset_password', '/reset_password/:key/:id', array('module' => 'sfGuardForgotPassword', 'action' => 'reset_password'));
