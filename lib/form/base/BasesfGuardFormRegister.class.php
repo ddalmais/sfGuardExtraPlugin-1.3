@@ -19,5 +19,7 @@ class BasesfGuardFormRegister extends sfForm
     ));
 
     $this->validatorSchema->setPostValidator(new sfValidatorSchemaCompare('user_password', sfValidatorSchemaCompare::EQUAL, 'user_password_confirmation', array(), array('invalid' => 'The two passwords do not match')));
+
+    $this->widgetSchema->setNameFormat('register[%s]');
   }
 }
