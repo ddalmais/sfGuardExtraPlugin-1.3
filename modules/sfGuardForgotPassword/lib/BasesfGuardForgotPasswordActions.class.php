@@ -37,7 +37,7 @@ class BasesfGuardForgotPasswordActions extends sfActions
 
     if ($request->isMethod('post'))
     {
-      $this->form->bind(array('username_or_email_address' => $request->getParameter('username_or_email_address')));
+      $this->form->bind($request->getParameter('forgot_password'));
       if ($this->form->isValid())
       {
         $values = $this->form->getValues();
