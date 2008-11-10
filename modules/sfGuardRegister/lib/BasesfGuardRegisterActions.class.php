@@ -1,6 +1,12 @@
 <?php
 class BasesfGuardRegisterActions extends sfActions
 {
+  /**
+   * preExecute
+   *
+   * @access public
+   * @return void
+   */
   public function preExecute()
   {
     if( $this->getUser()->isAuthenticated() )
@@ -8,7 +14,13 @@ class BasesfGuardRegisterActions extends sfActions
       $this->redirect('@homepage');
     }
   }
-  
+
+  /**
+   * executeRegister
+   *
+   * @access public
+   * @return void
+   */
   public function executeRegister($request)
   {
     $this->form = new sfGuardFormRegister();
@@ -30,11 +42,11 @@ class BasesfGuardRegisterActions extends sfActions
           'sfGuardUser' => $this->sfGuardUser,
           'password' => $values['password']
         );
-        $message = $this->getComponent('sfGuardRegister', 'send_request_confirm_register', $messageParams);
+        $message = $this->getComponent('sfGuardRegister', 'send_request_confirm', $messageParams);
 
         $mailParams = array(
           'to' => $this->sfGuardUser->getEmailAddress(),
-          'subject' => 'Register confirmation',
+          'subject' => 'Confirm Registration',
           'message' => $message
         );
         sfGuardExtraMail::send($mailParams);
@@ -53,71 +65,49 @@ class BasesfGuardRegisterActions extends sfActions
   public function executeRequest_confirm_register()
   {
   }
-  
+
+  /**
+   * executeRegister_confirm
+   *
+   * @access public
+   * @return void
+   */
   public function executeRegister_confirm()
   {
     $params = array($this->getRequestParameter('key'), $this->getRequestParameter('id'));
 
     $query = new Doctrine_Query();
     $query->from('sfGuardUser u')->where('u.password = ? AND u.id = ?', $params)->limit(1);
-    
-    $this->sfGuardUser = $query->execute()->getFirst();
-    $this->sfGuardUser->setIsActive(1);
-    $this->sfGuardUser->confirm();
-    $this->sfGuardUser->save();
-    
-    $this->forward404Unless($this->sfGuardUser);
-    
-    $rawEmail = $this->sendEmail('sfGuardRegister', 'send_register_complete');
-    $this->logMessage($rawEmail, 'debug');
-    
-    $this->setFlash('notice', 'You have successfully confirmed your registration!');
-    $this->redirect('@sf_guard_register_complete?id='.$this->sfGuardUser->getId());
-  }
-  
-//  public function executeRegister_complete()
-//  {
-//    
-//  }
-  
-//  public function handleErrorRegister()
-//  {
-//    $this->setFlash('error', 'An error occurred with your registration, please try again!');
-//    $this->forward('sfGuardRegister', 'index');
-//  }
 
-  public function executeSend_confirm_registration()
-  {
-    $this->sfGuardUser = sfGuardUserTable::retrieveByUsernameOrEmailAddress($this->getRequestParameter('user[username]'), false);
-    
-    $mail = new sfMail();
-    $mail->setContentType('text/html');
-    $mail->setSender(sfConfig::get('app_outgoing_emails_sender'));
-    $mail->setFrom(sfConfig::get('app_outgoing_emails_from'));
-    $mail->addReplyTo(sfConfig::get('app_outgoing_emails_reply_to'));
-    $mail->addAddress($this->sfGuardUser->getEmailAddress());
-    $mail->setSubject('Confirm Registration');
-    
-    $this->mail = $mail;
+    $sfGuardUser = $query->execute()->getFirst();
+    $sfGuardUser->setIsActive(1);
+    $sfGuardUser->confirm();
+    $sfGuardUser->save();
+
+    $this->forward404Unless($sfGuardUser);
+
+    $messageParams = array(
+      'sfGuardUser' => $sfGuardUser,
+    );
+    $message = $this->getComponent('sfGuardRegister', 'send_complete', $messageParams);
+
+    $mailParams = array(
+      'to' => $sfGuardUser->getEmailAddress(),
+      'subject' => 'Registration Complete',
+      'message' => $message
+    );
+    sfGuardExtraMail::send($mailParams);
+
+    $this->redirect('@sf_guard_register_complete?id='.$sfGuardUser->getId());
   }
 
-  public function executeSend_register_complete()
+  /**
+   * executeRegister_complete
+   *
+   * @access public
+   * @return void
+   */
+  public function executeRegister_complete()
   {
-    $params = array($this->getRequestParameter('key'), $this->getRequestParameter('id'));
-    
-    $query = new Doctrine_Query();
-    $query->from('sfGuardUser u')->where('u.password = ? AND u.id = ?', $params)->limit(1);
-    
-    $this->sfGuardUser = $query->execute()->getFirst();
-    
-    $mail = new sfMail();
-    $mail->setContentType('text/html');
-    $mail->setSender(sfConfig::get('app_outgoing_emails_sender'));
-    $mail->setFrom(sfConfig::get('app_outgoing_emails_from'));
-    $mail->addReplyTo(sfConfig::get('app_outgoing_emails_reply_to'));
-    $mail->addAddress($this->sfGuardUser->getEmailAddress());
-    $mail->setSubject('Registration Complete');
-
-    $this->mail = $mail;
   }
 }

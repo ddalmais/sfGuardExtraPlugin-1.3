@@ -17,7 +17,11 @@
  */
 class BasesfGuardRegisterComponents extends sfComponents
 {
-  public function executeSend_request_confirm_register()
+  public function executeSend_request_confirm()
+  {
+  }
+
+  public function executeSend_complete()
   {
   }
 }
