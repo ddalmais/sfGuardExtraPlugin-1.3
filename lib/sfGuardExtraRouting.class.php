@@ -32,10 +32,9 @@ class sfGuardExtraRouting
     $r->prependRoute('sf_guard_forgot_password_reset_password', '/reset_password/:key/:id', array('module' => 'sfGuardForgotPassword', 'action' => 'reset_password'));
 
     // register
-    $r->prependRoute('sf_guard_register', '/register', array('module' => 'sfGuardRegister', 'action' => 'index'));
-    $r->prependRoute('sf_guard_do_register', '/register/do', array('module' => 'sfGuardRegister', 'action' => 'register'));
+    $r->prependRoute('sf_guard_register', '/register', array('module' => 'sfGuardRegister', 'action' => 'register'));
+    $r->prependRoute('sf_guard_do_register', '/register/do', array('module' => 'sfGuardRegister', 'action' => 'request_confirm_register'));
     $r->prependRoute('sf_guard_register_confirm', '/register/confirm/:key/:id', array('module' => 'sfGuardRegister', 'action' => 'register_confirm'));
-    $r->prependRoute('sf_guard_register_success', '/register/success', array('module' => 'sfGuardRegister', 'action' => 'register_success'));
     $r->prependRoute('sf_guard_register_complete', '/register/complete/:id', array('module' => 'sfGuardRegister', 'action' => 'register_complete'));
   }
 }

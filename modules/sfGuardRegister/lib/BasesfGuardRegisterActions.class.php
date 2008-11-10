@@ -9,7 +9,7 @@ class BasesfGuardRegisterActions extends sfActions
     }
   }
   
-  public function executeIndex($request)
+  public function executeRegister($request)
   {
     $this->form = new sfGuardFormRegister();
 
@@ -20,54 +20,37 @@ class BasesfGuardRegisterActions extends sfActions
       {
         $values = $this->form->getValues();
 
-//TODO: insert into db
-//    $this->sfGuardUser = new sfGuardUser();
-//    $this->sfGuardUser->merge($userInfo);
-//    $this->sfGuardUser->setEmailAddress($userInfo['email_address']);
-//    $this->sfGuardUser->setIsActive(0);
-//    $this->sfGuardUser->register($userInfo);
-//    $this->sfGuardUser->save();
-//TODO: send mail
-//        $sfGuardUser = sfGuardUserTable::retrieveByUsernameOrEmailAddress($values['username_or_email_address'], true);
-//
-//        $messageParams = array(
-//          'sfGuardUser' => $sfGuardUser,
-//        );
-//        $message = $this->getComponent('sfGuardForgotPassword', 'send_request_reset_password', $messageParams);
-//
-//        $mailParams = array(
-//          'to' => $sfGuardUser->getEmailAddress(),
-//          'subject' => 'Request to reset password',
-//          'message' => $message
-//        );
-//        sfGuardExtraMail::send($mailParams);
+        $this->sfGuardUser = new sfGuardUser();
+        $this->sfGuardUser->merge($values);
+        $this->sfGuardUser->setEmailAddress($values['email_address']);
+        $this->sfGuardUser->setIsActive(0);
+        $this->sfGuardUser->save();
+
+        $messageParams = array(
+          'sfGuardUser' => $this->sfGuardUser,
+        );
+        $message = $this->getComponent('sfGuardRegister', 'send_request_confirm_register', $messageParams);
+
+        $mailParams = array(
+          'to' => $this->sfGuardUser->getEmailAddress(),
+          'subject' => 'Register confirmation',
+          'message' => $message
+        );
+        sfGuardExtraMail::send($mailParams);
 
         return $this->redirect('@sf_guard_do_register?'.http_build_query($values));
       }
     }
   }
 
-//  public function executeRegister()
-//  {
-//    $userInfo = $this->getRequestParameter('user');
-//    
-//    $this->sfGuardUser = new sfGuardUser();
-//    $this->sfGuardUser->merge($userInfo);
-//    $this->sfGuardUser->setEmailAddress($userInfo['email_address']);
-//    $this->sfGuardUser->setIsActive(0);
-//    $this->sfGuardUser->register($userInfo);
-//    $this->sfGuardUser->save();
-//    
-//    $rawEmail = $this->sendEmail('sfGuardRegister', 'send_confirm_registration');
-//    $this->logMessage($rawEmail, 'debug');
-//    
-//    $this->setFlash('notice', 'Please check your e-mail, you must confirm your registration before continuing!');
-//    $this->redirect('@sf_guard_register_success');
-//  }
-  
-  public function executeRegister_success()
+  /**
+   * executeRequest_confirm_register
+   *
+   * @access public
+   * @return void
+   */
+  public function executeRequest_confirm_register()
   {
-    
   }
   
   public function executeRegister_confirm()

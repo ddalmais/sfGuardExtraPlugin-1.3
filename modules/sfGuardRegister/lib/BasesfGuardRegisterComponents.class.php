@@ -8,15 +8,16 @@
  * file that was distributed with this source code.
  */
 
-require_once(dirname(__FILE__).'/../lib/BasesfGuardRegisterComponents.class.php');
-
 /**
  *
  * @package    symfony
  * @subpackage plugin
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id: actions.class.php 7634 2008-02-27 18:01:40Z fabien $
+ * @version    SVN: $Id: BasesfGuardAuthActions.class.php 7745 2008-03-05 11:05:33Z fabien $
  */
-class sfGuardRegisterComponents extends BasesfGuardRegisterComponents
+class BasesfGuardRegisterComponents extends sfComponents
 {
+  public function executeSend_request_confirm_register()
+  {
+  }
 }
