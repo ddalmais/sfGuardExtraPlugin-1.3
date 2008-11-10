@@ -28,6 +28,7 @@ class BasesfGuardRegisterActions extends sfActions
 
         $messageParams = array(
           'sfGuardUser' => $this->sfGuardUser,
+          'password' => $values['password']
         );
         $message = $this->getComponent('sfGuardRegister', 'send_request_confirm_register', $messageParams);
 

@@ -5,4 +5,4 @@ Hello <?php echo $sfGuardUser->getUsername(); ?>,<br/><br/>
 Your login information can be found below:<br/><br/>
 
 Username: <?php echo $sfGuardUser->getUsername(); ?><br/>
-Password: <?php echo $sf_request->getParameter('user[password]'); ?>
+Password: <?php echo $password; ?>
