@@ -83,7 +83,6 @@ class BasesfGuardRegisterActions extends sfActions
 
     $sfGuardUser = $query->execute()->getFirst();
     $sfGuardUser->setIsActive(1);
-    $sfGuardUser->confirm();
     $sfGuardUser->save();
 
     $this->forward404Unless($sfGuardUser);
