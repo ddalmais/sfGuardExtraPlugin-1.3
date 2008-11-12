@@ -42,7 +42,7 @@ class BasesfGuardRegisterActions extends sfActions
           'sfGuardUser' => $this->sfGuardUser,
           'password' => $values['password']
         );
-        $message = $this->getComponent('sfGuardRegister', 'send_request_confirm', $messageParams);
+        $message = $this->getComponent($this->getModuleName(), 'send_request_confirm', $messageParams);
 
         $mailParams = array(
           'module'  => $this->getModuleName(),
@@ -90,7 +90,7 @@ class BasesfGuardRegisterActions extends sfActions
     $messageParams = array(
       'sfGuardUser' => $sfGuardUser,
     );
-    $message = $this->getComponent('sfGuardRegister', 'send_complete', $messageParams);
+    $message = $this->getComponent($this->getModuleName(), 'send_complete', $messageParams);
 
     $mailParams = array(
       'module'  => $this->getModuleName(),

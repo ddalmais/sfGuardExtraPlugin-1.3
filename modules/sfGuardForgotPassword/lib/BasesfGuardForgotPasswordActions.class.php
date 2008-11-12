@@ -55,7 +55,7 @@ class BasesfGuardForgotPasswordActions extends sfActions
         $messageParams = array(
           'sfGuardUser' => $sfGuardUser,
         );
-        $message = $this->getComponent('sfGuardForgotPassword', 'send_request_reset_password', $messageParams);
+        $message = $this->getComponent($this->getModuleName(), 'send_request_reset_password', $messageParams);
 
         $mailParams = array(
           'module'  => $this->getModuleName(),
@@ -111,7 +111,7 @@ class BasesfGuardForgotPasswordActions extends sfActions
       'username' => $this->sfGuardUser->getUsername(),
       'password' => $newPassword
     );
-    $message = $this->getComponent('sfGuardForgotPassword', 'send_reset_password', $messageParams);
+    $message = $this->getComponent($this->getModuleName(), 'send_reset_password', $messageParams);
 
     $mailParams = array(
       'module'  => $this->getModuleName(),
