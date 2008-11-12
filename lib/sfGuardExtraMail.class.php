@@ -24,7 +24,7 @@ class sfGuardExtraMail
    */
   static public function send(array $params)
   {
-    if(!(isset($params['to']) and isset($params['subject']) and isset($params['message'])))
+    if(!(isset($params['module']) and isset($params['action']) and isset($params['to']) and isset($params['subject']) and isset($params['message'])))
     {
       throw new sfException('You must provide the following parameter to, subject and message');
     }

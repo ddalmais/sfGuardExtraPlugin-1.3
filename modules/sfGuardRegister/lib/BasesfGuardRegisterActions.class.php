@@ -9,7 +9,7 @@ class BasesfGuardRegisterActions extends sfActions
    */
   public function preExecute()
   {
-    if( $this->getUser()->isAuthenticated() )
+    if($this->getUser()->isAuthenticated())
     {
       $this->redirect('@homepage');
     }
@@ -45,7 +45,9 @@ class BasesfGuardRegisterActions extends sfActions
         $message = $this->getComponent('sfGuardRegister', 'send_request_confirm', $messageParams);
 
         $mailParams = array(
-          'to' => $this->sfGuardUser->getEmailAddress(),
+          'module'  => $this->getModuleName(),
+          'action'  => $this->getActionName(),
+          'to'      => $this->sfGuardUser->getEmailAddress(),
           'subject' => 'Confirm Registration',
           'message' => $message
         );
@@ -72,9 +74,9 @@ class BasesfGuardRegisterActions extends sfActions
    * @access public
    * @return void
    */
-  public function executeRegister_confirm()
+  public function executeRegister_confirm($request)
   {
-    $params = array($this->getRequestParameter('key'), $this->getRequestParameter('id'));
+    $params = array($request->getParameter('key'), $request->getParameter('id'));
 
     $query = new Doctrine_Query();
     $query->from('sfGuardUser u')->where('u.password = ? AND u.id = ?', $params)->limit(1);
@@ -92,7 +94,9 @@ class BasesfGuardRegisterActions extends sfActions
     $message = $this->getComponent('sfGuardRegister', 'send_complete', $messageParams);
 
     $mailParams = array(
-      'to' => $sfGuardUser->getEmailAddress(),
+      'module'  => $this->getModuleName(),
+      'action'  => $this->getActionName(),
+      'to'      => $sfGuardUser->getEmailAddress(),
       'subject' => 'Registration Complete',
       'message' => $message
     );

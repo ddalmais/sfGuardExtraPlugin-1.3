@@ -18,6 +18,20 @@
 class BasesfGuardForgotPasswordActions extends sfActions
 {
   /**
+   * preExecute
+   *
+   * @access public
+   * @return void
+   */
+  public function preExecute()
+  {
+    if($this->getUser()->isAuthenticated())
+    {
+      $this->redirect('@homepage');
+    }
+  }
+
+  /**
    * executePassword
    *
    * Form for requesting instructions on how to reset your password
@@ -27,12 +41,6 @@ class BasesfGuardForgotPasswordActions extends sfActions
    */
   public function executePassword($request)
   {
-    $user = $this->getUser();
-    if ($user->isAuthenticated())
-    {
-      return $this->redirect('@homepage');
-    }
-
     $this->form = new sfGuardFormForgotPassword();
 
     if ($request->isMethod('post'))
@@ -50,7 +58,9 @@ class BasesfGuardForgotPasswordActions extends sfActions
         $message = $this->getComponent('sfGuardForgotPassword', 'send_request_reset_password', $messageParams);
 
         $mailParams = array(
-          'to' => $sfGuardUser->getEmailAddress(),
+          'module'  => $this->getModuleName(),
+          'action'  => $this->getActionName(),
+          'to'      => $sfGuardUser->getEmailAddress(),
           'subject' => 'Request to reset password',
           'message' => $message
         );
@@ -104,7 +114,9 @@ class BasesfGuardForgotPasswordActions extends sfActions
     $message = $this->getComponent('sfGuardForgotPassword', 'send_reset_password', $messageParams);
 
     $mailParams = array(
-      'to' => $this->sfGuardUser->getEmailAddress(),
+      'module'  => $this->getModuleName(),
+      'action'  => $this->getActionName(),
+      'to'      => $this->sfGuardUser->getEmailAddress(),
       'subject' => 'Password reset successfully',
       'message' => $message
     );
