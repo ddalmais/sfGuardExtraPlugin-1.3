@@ -27,14 +27,14 @@ class sfGuardExtraRouting
     $r = $event->getSubject();
 
     // forgot password
-    $r->prependRoute('sf_guard_password', '/request_password', array('module' => 'sfGuardForgotPassword', 'action' => 'password'));
-    $r->prependRoute('sf_guard_do_password', '/request_password/do', array('module' => 'sfGuardForgotPassword', 'action' => 'request_reset_password'));
-    $r->prependRoute('sf_guard_forgot_password_reset_password', '/reset_password/:key/:id', array('module' => 'sfGuardForgotPassword', 'action' => 'reset_password'));
+    $r->prependRoute('sf_guard_password', new sfRoute('/request_password', array('module' => 'sfGuardForgotPassword', 'action' => 'password')));
+    $r->prependRoute('sf_guard_do_password', new sfRoute('/request_password/do', array('module' => 'sfGuardForgotPassword', 'action' => 'request_reset_password')));
+    $r->prependRoute('sf_guard_forgot_password_reset_password', new sfRoute('/reset_password/:key/:id', array('module' => 'sfGuardForgotPassword', 'action' => 'reset_password')));
 
     // register
-    $r->prependRoute('sf_guard_register', '/register', array('module' => 'sfGuardRegister', 'action' => 'register'));
-    $r->prependRoute('sf_guard_do_register', '/register/do', array('module' => 'sfGuardRegister', 'action' => 'request_confirm_register'));
-    $r->prependRoute('sf_guard_register_confirm', '/register/confirm/:key/:id', array('module' => 'sfGuardRegister', 'action' => 'register_confirm'));
-    $r->prependRoute('sf_guard_register_complete', '/register/complete/:id', array('module' => 'sfGuardRegister', 'action' => 'register_complete'));
+    $r->prependRoute('sf_guard_register', new sfRoute('/register', array('module' => 'sfGuardRegister', 'action' => 'register')));
+    $r->prependRoute('sf_guard_do_register', new sfRoute('/register/do', array('module' => 'sfGuardRegister', 'action' => 'request_confirm_register')));
+    $r->prependRoute('sf_guard_register_confirm', new sfRoute('/register/confirm/:key/:id', array('module' => 'sfGuardRegister', 'action' => 'register_confirm')));
+    $r->prependRoute('sf_guard_register_complete', new sfRoute('/register/complete/:id', array('module' => 'sfGuardRegister', 'action' => 'register_complete')));
   }
 }
