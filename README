@@ -18,7 +18,51 @@ It gives you the modules ForgotPassword and Register.
     {{{
       all:
         .settings:
-          enabled_modules:      [default, sfGuardForgotPassword, sfGuardRegister]
+          enabled_modules:      [default, sfGuardAuth, sfGuardForgotPassword, sfGuardRegister]
+    }}}
+
+  * The sfGuardPlugin automatically registered a route named `password` if the module `sfGuardAuth`
+  is enabled so you must diable this feature define `sf_guard_plugin_routes_register` to false
+  in the `app.yml` configuration file:
+
+    {{{
+      all:
+        sf_guard_plugin:
+          routes_register: false
+    }}}
+
+  * Add the following routing rules to `routing.yml`
+
+    {{{
+      sf_guard_signin:
+        url:   /login
+        param: { module: sfGuardAuth, action: signin }
+
+      sf_guard_signout:
+        url:   /logout
+        param: { module: sfGuardAuth, action: signout }
+    }}}
+
+  * Add method `retrieveByUsernameOrEmailAddress` to get a user by email or username in lib/model/doctrine/sfDoctrineGuardPlugin/sfGuardUserTable.class e.q.
+
+    {{{
+      static public function retrieveByUsernameOrEmailAddress($usernameOrEmail, $isActive = true )
+      {
+        return Doctrine_Query::create()->from('sfGuardUser u')->where( '(u.username = ? OR u.email = ?) AND u.is_active = ?', array( $usernameOrEmail, $usernameOrEmail, $isActive ) )->execute()->getFirst();
+      }
+    }}}
+
+  * Add getter and setter for `email_address` in lib/model/doctrine/sfDoctrineGuardPlugin/sfGuardUser.class e.q.
+
+    {{{
+      public function getEmailAddress()
+      {
+        return $this->email;
+      }
+      public function setEmailAddress($email)
+      {
+        $this->email = $email;
+      }
     }}}
 
   * Clear you cache
@@ -27,122 +71,16 @@ It gives you the modules ForgotPassword and Register.
       symfony cc
     }}}
 
-=== Secure your application ===
+== Email delivery ==
 
-To secure a symfony application:
-
-  * Enable the module `sfGuardAuth` in `settings.yml`
-
-  {{{
-    all:
-      .settings:
-        enabled_modules: [..., sfGuardAuth]
-  }}}
-
-  * Change the default login and secure modules in `settings.yml`
-
-  {{{
-    login_module:           sfGuardAuth
-    login_action:           signin
-
-    secure_module:          sfGuardAuth
-    secure_action:          secure
-  }}}
-
-  * Change the parent class in `myUser.class.php`
-
-  {{{
-    class myUser extends sfGuardSecurityUser
-    {
-    }
-  }}}
-
-  * Optionally add the following routing rules to `routing.yml`
-
-  {{{
-    sf_guard_signin:
-      url:   /login
-      param: { module: sfGuardAuth, action: signin }
-
-    sf_guard_signout:
-      url:   /logout
-      param: { module: sfGuardAuth, action: signout }
-
-    sf_guard_password:
-      url:   /request_password
-      param: { module: sfGuardAuth, action: password }
-  }}}
-
-  You can customize the `url` parameter of each route.
-  N.B.: You must have a `@homepage` routing rule (used when a user sign out)
-
-  These routes are automatically registered by the plugin if the module `sfGuardAuth`
-  is enabled unless you defined `sf_guard_plugin_routes_register` to false
-  in the `app.yml` configuration file:
-
-  {{{
-    all:
-      sf_guard_plugin:
-        routes_register: false
-  }}}
-
-  * You're done. Now, if you try to access a secure page, you will be redirected
-    to the login page.
-    If you have loaded the default fixture file, try to login with `admin` as
-    username and `admin` as password.
-
-== Customize sfGuardAuth module templates ==
-
-By default, `sfGuardAuth` module comes with 2 very simple templates:
-
-  * `signinSuccess.php`
-  * `secureSuccess.php`
-
-If you want to customize one of these templates:
-
-  * Create a `sfGuardAuth` module in your application (don't use the
-    `init-module` task, just create a `sfGuardAuth` directory)
-
-  * Create a template with the name of the template you want to customize in
-    the `sfGuardAuth/templates` directory
-
-  * symfony now renders your template instead of the default one
-
-== Customize `sfGuardAuth` module actions ==
-
-If you want to customize or add methods to the sfGuardAuth:
-
-  * Create a `sfGuardAuth` module in your application
-
-  * Create an `actions.class.php` file in your `actions` directory that inherit
-    from `BasesfGuardAuthActions` (don't forget to include the `BasesfGuardAuthActions`
-    as it can't be autoloaded by symfony)
-
-  {{{
-    <?php
-
-    require_once(sfConfig::get('sf_plugins_dir').'/sfGuardPlugin/modules/sfGuardAuth/lib/BasesfGuardAuthActions.class.php');
-
-    class sfGuardAuthActions extends BasesfGuardAuthActions
-    {
-      public function executeNewAction()
-      {
-        return $this->renderText('This is a new sfGuardAuth action.');
-      }
-    }
-  }}}
+You can override the mail delivery system simple copy `plugins/sfGuardExtraPlugin/lib/sfGuardExtraMail.class.php` to your lib folder and override the send method.
 
 == Validators ==
 
-`sfGuardPlugin` comes with a validator that you can use in your modules:
-`sfGuardUserValidator`.
+`sfGuardExtraPlugin` comes with a validator that you can use in your modules:
+`sfGuardValidatorUsernameOrEmail`.
 
-This validator is used by the `sfGuardAuth` module to validate a user and
-password and automatically signin the user.
-
-== TODO ==
-
-  * import/convert register from sfDoctrineGuardPlugin 1.0
+This validator is used by the `sfGuardForgotPassword` module to check if user exist for username or email.
 
 == Changelog ==
 
