@@ -50,7 +50,7 @@ class BasesfGuardForgotPasswordActions extends sfActions
       {
         $values = $this->form->getValues();
 
-        $sfGuardUser = sfGuardUserTable::retrieveByUsernameOrEmailAddress($values['username_or_email_address'], true);
+        $sfGuardUser = sfGuardUserPeer::retrieveByUsernameOrEmailAddress($values['username_or_email_address'], true);
 
         $messageParams = array(
           'sfGuardUser' => $sfGuardUser,
