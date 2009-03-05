@@ -91,17 +91,13 @@ class BasesfGuardForgotPasswordActions extends sfActions
    */
   public function executeReset_password($request)
   {
-    $params = array($request->getParameter('key'), $request->getParameter('id'));
+    $c = new Criteria();
+    $c->add(sfGuardUserPeer::PASSWORD, $request->getParameter('key'));
+    $c->add(sfGuardUserPeer::ID, $request->getParameter('id'));
 
-    $query = new Doctrine_Query();
-    $query->from('sfGuardUser u')->where('u.password = ? AND u.id = ?', $params)->limit(1);
+ 	  $this->sfGuardUser = sfGuardUserPeer::doSelectOne($c);
 
-    $this->sfGuardUser = $query->execute()->getFirst();
-
-    if ( ! $this->sfGuardUser)
-    {
-      $this->forward('sfGuardForgotPassword', 'invalid_key');
-    }
+    $this->forwardUnless($this->sfGuardUser, 'sfGuardForgotPassword', 'invalid_key');
 
     $newPassword = time();
     $this->sfGuardUser->setPassword($newPassword);

@@ -76,16 +76,16 @@ class BasesfGuardRegisterActions extends sfActions
    */
   public function executeRegister_confirm($request)
   {
-    $params = array($request->getParameter('key'), $request->getParameter('id'));
+    $c = new Criteria();
+    $c->add(sfGuardUserPeer::PASSWORD, $request->getParameter('key'));
+    $c->add(sfGuardUserPeer::ID, $request->getParameter('id'));
 
-    $query = new Doctrine_Query();
-    $query->from('sfGuardUser u')->where('u.password = ? AND u.id = ?', $params)->limit(1);
-
-    $sfGuardUser = $query->execute()->getFirst();
-    $sfGuardUser->setIsActive(1);
-    $sfGuardUser->save();
+ 	  $sfGuardUser = sfGuardUserPeer::doSelectOne($c);
 
     $this->forward404Unless($sfGuardUser);
+
+    $sfGuardUser->setIsActive(1);
+    $sfGuardUser->save();
 
     $messageParams = array(
       'sfGuardUser' => $sfGuardUser,
