@@ -33,7 +33,7 @@ class BasesfGuardRegisterActions extends sfActions
         $values = $this->form->getValues();
 
         $this->sfGuardUser = new sfGuardUser();
-        $this->sfGuardUser->merge($values);
+        $this->sfGuardUser->fromArray($values, BasePeer::TYPE_FIELDNAME);
         $this->sfGuardUser->setEmailAddress($values['email_address']);
         $this->sfGuardUser->setIsActive(0);
         $this->sfGuardUser->save();
