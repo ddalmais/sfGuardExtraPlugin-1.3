@@ -53,7 +53,9 @@ class BasesfGuardRegisterActions extends sfActions
         );
         sfGuardExtraMail::send($mailParams);
 
-        return $this->redirect('@sf_guard_do_register?'.http_build_query($values));
+        $this->getUser()->setFlash('values', $values);
+
+        return $this->redirect('@sf_guard_do_register');
       }
     }
   }
