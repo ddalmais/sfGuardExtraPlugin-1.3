@@ -1,4 +1,20 @@
 <?php
+
+/*
+ * This file is part of the symfony package.
+ * (c) 2004-2006 Fabien Potencier <fabien.potencier@symfony-project.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/**
+ *
+ * @package    symfony
+ * @subpackage plugin
+ * @author     Gordon Franke <gfranke@savedcite.com>
+ * @version    SVN: $Id$
+ */
 class BasesfGuardRegisterActions extends sfActions
 {
   /**
@@ -21,7 +37,7 @@ class BasesfGuardRegisterActions extends sfActions
    * @access public
    * @return void
    */
-  public function executeRegister($request)
+  public function executeRegister(sfWebRequest $request)
   {
     $this->form = new sfGuardFormRegister();
 
@@ -66,7 +82,7 @@ class BasesfGuardRegisterActions extends sfActions
    * @access public
    * @return void
    */
-  public function executeRequest_confirm_register()
+  public function executeRequest_confirm_register(sfWebRequest $request)
   {
   }
 
@@ -76,7 +92,7 @@ class BasesfGuardRegisterActions extends sfActions
    * @access public
    * @return void
    */
-  public function executeRegister_confirm($request)
+  public function executeRegister_confirm(sfWebRequest $request)
   {
     $c = new Criteria();
     $c->add(sfGuardUserPeer::PASSWORD, $request->getParameter('key'));
@@ -112,7 +128,7 @@ class BasesfGuardRegisterActions extends sfActions
    * @access public
    * @return void
    */
-  public function executeRegister_complete()
+  public function executeRegister_complete(sfWebRequest $request)
   {
   }
 }

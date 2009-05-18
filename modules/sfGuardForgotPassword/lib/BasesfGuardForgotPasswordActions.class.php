@@ -12,8 +12,8 @@
  *
  * @package    symfony
  * @subpackage plugin
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id: BasesfGuardAuthActions.class.php 7745 2008-03-05 11:05:33Z fabien $
+ * @author     Gordon Franke <gfranke@savedcite.com>
+ * @version    SVN: $Id$
  */
 class BasesfGuardForgotPasswordActions extends sfActions
 {
@@ -39,7 +39,7 @@ class BasesfGuardForgotPasswordActions extends sfActions
    * @return void
    * @author Jonathan H. Wage
    */
-  public function executePassword($request)
+  public function executePassword(sfWebRequest $request)
   {
     $this->form = new sfGuardFormForgotPassword();
 
@@ -77,7 +77,7 @@ class BasesfGuardForgotPasswordActions extends sfActions
    * @access public
    * @return void
    */
-  public function executeRequest_reset_password()
+  public function executeRequest_reset_password(sfWebRequest $request)
   {
   }
 
@@ -89,7 +89,7 @@ class BasesfGuardForgotPasswordActions extends sfActions
    * @access public
    * @return void
    */
-  public function executeReset_password($request)
+  public function executeReset_password(sfWebRequest $request)
   {
     $c = new Criteria();
     $c->add(sfGuardUserPeer::PASSWORD, $request->getParameter('key'));
@@ -125,7 +125,7 @@ class BasesfGuardForgotPasswordActions extends sfActions
    * @access public
    * @return void
    */
-  public function executeInvalid_key()
+  public function executeInvalid_key(sfWebRequest $request)
   {
   }
 }

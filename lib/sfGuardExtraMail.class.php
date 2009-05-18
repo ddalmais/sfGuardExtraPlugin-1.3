@@ -12,15 +12,15 @@
  *
  * @package    symfony
  * @subpackage plugin
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id: sfGuardMail.class.php 7636 2008-02-27 18:50:43Z fabien $
+ * @author     Gordon Franke <gfranke@savedcite.com>
+ * @version    SVN: $Id$
  */
 class sfGuardExtraMail
 {
   /**
    * send mail
    *
-   * @param array parameter
+   * @param array $params some params for the mail
    */
   static public function send(array $params)
   {
