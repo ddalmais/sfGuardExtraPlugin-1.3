@@ -48,14 +48,14 @@ class BasesfGuardRegisterActions extends sfActions
       {
         $values = $this->form->getValues();
 
-        $this->sfGuardUser = new sfGuardUser();
-        $this->sfGuardUser->fromArray($values, BasePeer::TYPE_FIELDNAME);
-        $this->sfGuardUser->setEmailAddress($values['email_address']);
-        $this->sfGuardUser->setIsActive(0);
-        $this->sfGuardUser->save();
+        $sfGuardUser = new sfGuardUser();
+        $sfGuardUser->fromArray($values, BasePeer::TYPE_FIELDNAME);
+        $sfGuardUser->setEmailAddress($values['email_address']);
+        $sfGuardUser->setIsActive(0);
+        $sfGuardUser->save();
 
         $messageParams = array(
-          'sfGuardUser' => $this->sfGuardUser,
+          'sfGuardUser' => $sfGuardUser,
           'password' => $values['password']
         );
         $message = $this->getComponent($this->getModuleName(), 'send_request_confirm', $messageParams);
@@ -63,13 +63,14 @@ class BasesfGuardRegisterActions extends sfActions
         $mailParams = array(
           'module'  => $this->getModuleName(),
           'action'  => $this->getActionName(),
-          'to'      => $this->sfGuardUser->getEmailAddress(),
+          'to'      => $sfGuardUser->getEmailAddress(),
           'subject' => 'Confirm Registration',
           'message' => $message
         );
         sfGuardExtraMail::send($mailParams);
 
         $this->getUser()->setFlash('values', $values);
+        $this->getUser()->setFlash('sfGuardUser', $sfGuardUser);
 
         return $this->redirect('@sf_guard_do_register');
       }
