@@ -1,5 +1,5 @@
 <?php
 
-class sfGuardFormRegister extends BasesfGuardFormRegister
+class sfGuardFormRegister extends PluginsfGuardFormRegister
 {
 }

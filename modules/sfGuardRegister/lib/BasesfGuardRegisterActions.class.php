@@ -41,33 +41,32 @@ class BasesfGuardRegisterActions extends sfActions
   {
     $this->form = new sfGuardFormRegister();
 
-    if ($request->isMethod('post'))
+    if ($request->isMethod(sfRequest::POST))
     {
-      $this->form->bind($request->getParameter('register'));
+      $this->form->bind($request->getParameter($this->form->getName()));
       if ($this->form->isValid())
       {
         $values = $this->form->getValues();
 
         $sfGuardUser = new sfGuardUser();
         $sfGuardUser->fromArray($values, BasePeer::TYPE_FIELDNAME);
-        $sfGuardUser->setEmailAddress($values['email_address']);
-        $sfGuardUser->setIsActive(0);
+        $sfGuardUser->setEmail($values['email']);
+        $sfGuardUser->setIsActive(false);
         $sfGuardUser->save();
 
         $messageParams = array(
           'sfGuardUser' => $sfGuardUser,
           'password' => $values['password']
         );
-        $message = $this->getComponent($this->getModuleName(), 'send_request_confirm', $messageParams);
-
-        $mailParams = array(
-          'module'  => $this->getModuleName(),
-          'action'  => $this->getActionName(),
-          'to'      => $sfGuardUser->getEmailAddress(),
-          'subject' => 'Confirm Registration',
-          'message' => $message
-        );
-        sfGuardExtraMail::send($mailParams);
+        $body = $this->getComponent($this->getModuleName(), 'send_request_confirm', $messageParams);
+        $from = sfConfig::get('app_sf_guard_extra_plugin_mail_from', 'noreply@example.org');
+        $fromName = sfConfig::get('app_sf_guard_extra_plugin_name_from', 'noreply');
+        $to = $sfGuardUser->getEmail();
+        $toName = $sfGuardUser->getUsername();
+        $subject = sfConfig::get('app_sf_guard_extra_plugin_subject_confirm', 'Confirm Registration');
+        $mailer = $this->getMailer();
+        $message = $mailer->compose(array($from => $fromName), array($to => $toName), $subject, $body);
+        $mailer->send($message);
 
         $this->getUser()->setFlash('values', $values);
         $this->getUser()->setFlash('sfGuardUser', $sfGuardUser);
@@ -98,27 +97,25 @@ class BasesfGuardRegisterActions extends sfActions
     $c = new Criteria();
     $c->add(sfGuardUserPeer::PASSWORD, $request->getParameter('key'));
     $c->add(sfGuardUserPeer::ID, $request->getParameter('id'));
-
  	  $sfGuardUser = sfGuardUserPeer::doSelectOne($c);
-
-    $this->forward404Unless($sfGuardUser);
-
-    $sfGuardUser->setIsActive(1);
+    $this->forward404Unless($sfGuardUser, 'user not found');
+    $sfGuardUser->setIsActive(true);
     $sfGuardUser->save();
 
     $messageParams = array(
       'sfGuardUser' => $sfGuardUser,
     );
-    $message = $this->getComponent($this->getModuleName(), 'send_complete', $messageParams);
+    $body = $this->getComponent($this->getModuleName(), 'send_complete', $messageParams);
+    $from = sfConfig::get('app_sf_guard_extra_plugin_mail_from', 'noreply@example.org');
+    $fromName = sfConfig::get('app_sf_guard_extra_plugin_name_from', 'noreply');
+    $to = $sfGuardUser->getEmail();
+    $toName = $sfGuardUser->getUsername();
+    $subject = sfConfig::get('app_sf_guard_extra_plugin_subject_complete', 'Request complete');
+    $mailer = $this->getMailer();
+    $message = $mailer->compose(array($from => $fromName), array($to => $toName), $subject, $body);
+    $mailer->send($message);
 
-    $mailParams = array(
-      'module'  => $this->getModuleName(),
-      'action'  => $this->getActionName(),
-      'to'      => $sfGuardUser->getEmailAddress(),
-      'subject' => 'Registration Complete',
-      'message' => $message
-    );
-    sfGuardExtraMail::send($mailParams);
+    $this->getUser()->signin($sfGuardUser);
 
     $this->redirect('@sf_guard_register_complete?id='.$sfGuardUser->getId());
   }

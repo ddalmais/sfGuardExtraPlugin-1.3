@@ -26,7 +26,7 @@ class sfGuardValidatorUsernameOrEmail extends sfValidatorBase
     $clean = (string) $value;
 
     // user exists?
-    if (false !== sfGuardUserPeer::retrieveByUsernameOrEmailAddress($clean))
+    if (!is_null(sfGuardUserPeer::retrieveByUsernameOrEmail($clean)))
     {
     	return $value;
     }

@@ -1,5 +1,5 @@
 <?php
 
-class sfGuardFormForgotPassword extends BasesfGuardFormForgotPassword
+class sfGuardFormForgotPassword extends PluginsfGuardFormForgotPassword
 {
 }

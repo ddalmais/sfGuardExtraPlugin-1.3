@@ -1,7 +1,7 @@
-The `sfGuardExtraPlugin` is a symfony plugin that provides additional
-modules for sfGuardPlugin.
+sfGuardExtraPlugin
+==================
 
-It gives you the modules ForgotPassword and Register.
+This plugin provides additional modules for `sfGuardPlugin`: `ForgotPassword` and `Register`.
 
 # Installation
 
@@ -10,34 +10,50 @@ It gives you the modules ForgotPassword and Register.
         symfony plugin:install sfGuardExtraPlugin
 
   * Enable one or more modules in your `settings.yml` (optional).
-  For your frontend application: sfGuardForgotPassword, sfGuardRegister
+  For your frontend application: `sfGuardForgotPassword`, `sfGuardRegister`
 
+        [yml]
         all:
           .settings:
-            enabled_modules:      [default, sfGuardAuth, sfGuardForgotPassword, sfGuardRegister]
+            enabled_modules:      [sfGuardAuth, sfGuardForgotPassword, sfGuardRegister]
 
-  * The sfGuardPlugin automatically registered a route named `password` if the module `sfGuardAuth`
-  is enabled so you must diable this feature define `sf_guard_plugin_routes_register` to false
-  in the `app.yml` configuration file:
+  * The `sfGuardPlugin` automatically registered a route named `password` if the module `sfGuardAuth`
+  is enabled, so you must be sure that `sfGuardExtraPlugin` is enabled *before* `sfGuardPlugin` in
+  your ProjectConfiguration.class.php, so it can register the route early:
 
-        all:
-          sf_guard_plugin:
-            routes_register: false
+        [php]
+        // in /config/ProjectConfiguration.class.php
+        public function setup()
+        {
+          // this list is incomplete: it depends on other plugins you could have installed before
+          $this->enablePlugins('sfPropelPlugin', 'sfGuardExtraPlugin', 'sfGuardPlugin');
+        }
 
-  * Add the following routing rules to `routing.yml`
+  * Add an `email` field to sfGuardUser schema
 
-        sf_guard_signin:
-          url:   /login
-          param: { module: sfGuardAuth, action: signin }
+        [yml]
+        sf_guard_user:
+          # [...]
+          email:     { type: varchar(255), required: true }
+          # [...]
 
-        sf_guard_signout:
-          url:   /logout
-          param: { module: sfGuardAuth, action: signout }
+    Alternatively, you can add email field to sfGuardUserProfile schema, and add proxy methods to sfGuardUser class:
 
-  * Add method `retrieveByUsernameOrEmailAddress` to get a user by email or username in lib/model/sfGuardPlugin/sfGuardUserPeer.class e.q.
+        [php]
+        public function getEmail()
+        {
+          return $this->getProfile()->getEmail();
+        }
+        public function setEmail($email)
+        {
+          $this->getProfile()->setEmail($email);
+        }
+    
 
-        [PHP]
-        static public function retrieveByUsernameOrEmailAddress($usernameOrEmail, $isActive = true )
+  * Add method `retrieveByUsernameOrEmail` to get a user by email or username in `lib/model/sfGuardPlugin/sfGuardUserPeer.class`
+
+        [php]
+        public static function retrieveByUsernameOrEmail($usernameOrEmail, $isActive = true )
         {
           $c = new Criteria();
  	        $c->add(self::USERNAME, $usernameOrEmail);
@@ -47,29 +63,29 @@ It gives you the modules ForgotPassword and Register.
  	        return self::doSelectOne($c);
         }
 
-  * Add getter and setter for `email_address` in lib/model/sfGuardPlugin/sfGuardUser.class e.q.
-
-        [PHP]
-        public function getEmailAddress()
-        {
-          return $this->email;
-        }
-        public function setEmailAddress($email)
-        {
-          $this->email = $email;
-        }
-
   * Clear you cache
 
         symfony cc
 
 # Email delivery
 
-You can override the mail delivery system simple copy `plugins/sfGuardExtraPlugin/lib/sfGuardExtraMail.class.php` to your lib folder and override the send method.
+Emails are sent using built-in `sfMailer`.
+
+You can customize the following mail parameters:
+
+    [yml]
+    all:
+      sf_guard_extra_plugin:
+        mail_from:        noreply@example.org
+        name_from:        noreply
+        subject_confirm:  Confirm Registration
+        subject_complete: Request complete
+        subject_request:  Request to reset password
+        subject_success:  Password reset successfully
 
 # Validators
 
 `sfGuardExtraPlugin` comes with a validator that you can use in your modules:
 `sfGuardValidatorUsernameOrEmail`.
 
-This validator is used by the `sfGuardForgotPassword` module to check if user exist for username or email.
+This validator is used by the `sfGuardForgotPassword` module to check if user exists for username or email.

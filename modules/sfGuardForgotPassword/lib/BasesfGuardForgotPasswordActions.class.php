@@ -43,28 +43,28 @@ class BasesfGuardForgotPasswordActions extends sfActions
   {
     $this->form = new sfGuardFormForgotPassword();
 
-    if ($request->isMethod('post'))
+    if ($request->isMethod(sfRequest::POST))
     {
-      $this->form->bind($request->getParameter('forgot_password'));
+      $this->form->bind($request->getParameter($this->form->getName()));
       if ($this->form->isValid())
       {
         $values = $this->form->getValues();
 
-        $sfGuardUser = sfGuardUserPeer::retrieveByUsernameOrEmailAddress($values['username_or_email_address'], true);
+        $sfGuardUser = sfGuardUserPeer::retrieveByUsernameOrEmail($values['username_or_email'], true);
+        $this->forward404Unless($sfGuardUser, 'user not found');
 
         $messageParams = array(
           'sfGuardUser' => $sfGuardUser,
         );
-        $message = $this->getComponent($this->getModuleName(), 'send_request_reset_password', $messageParams);
-
-        $mailParams = array(
-          'module'  => $this->getModuleName(),
-          'action'  => $this->getActionName(),
-          'to'      => $sfGuardUser->getEmailAddress(),
-          'subject' => 'Request to reset password',
-          'message' => $message
-        );
-        sfGuardExtraMail::send($mailParams);
+        $body = $this->getComponent($this->getModuleName(), 'send_request_reset_password', $messageParams);
+        $from = sfConfig::get('app_sf_guard_extra_plugin_mail_from', 'noreply@example.org');
+        $fromName = sfConfig::get('app_sf_guard_extra_plugin_name_from', 'noreply');
+        $to = $sfGuardUser->getEmail();
+        $toName = $sfGuardUser->getUsername();
+        $subject = sfConfig::get('app_sf_guard_extra_plugin_subject_request', 'Request to reset password');
+        $mailer = $this->getMailer();
+        $message = $mailer->compose(array($from => $fromName), array($to => $toName), $subject, $body);
+        $mailer->send($message);
 
         return $this->redirect('@sf_guard_do_password?'.http_build_query($values));
       }
@@ -94,9 +94,7 @@ class BasesfGuardForgotPasswordActions extends sfActions
     $c = new Criteria();
     $c->add(sfGuardUserPeer::PASSWORD, $request->getParameter('key'));
     $c->add(sfGuardUserPeer::ID, $request->getParameter('id'));
-
  	  $this->sfGuardUser = sfGuardUserPeer::doSelectOne($c);
-
     $this->forwardUnless($this->sfGuardUser, 'sfGuardForgotPassword', 'invalid_key');
 
     $newPassword = time();
@@ -107,16 +105,15 @@ class BasesfGuardForgotPasswordActions extends sfActions
       'sfGuardUser' => $this->sfGuardUser,
       'password' => $newPassword
     );
-    $message = $this->getComponent($this->getModuleName(), 'send_reset_password', $messageParams);
-
-    $mailParams = array(
-      'module'  => $this->getModuleName(),
-      'action'  => $this->getActionName(),
-      'to'      => $this->sfGuardUser->getEmailAddress(),
-      'subject' => 'Password reset successfully',
-      'message' => $message
-    );
-    sfGuardExtraMail::send($mailParams);
+    $body = $this->getComponent($this->getModuleName(), 'send_reset_password', $messageParams);
+    $from = sfConfig::get('app_sf_guard_extra_plugin_mail_from', 'noreply@example.org');
+    $fromName = sfConfig::get('app_sf_guard_extra_plugin_name_from', 'noreply');
+    $to = $this->sfGuardUser->getEmail();
+    $toName = $this->sfGuardUser->getUsername();
+    $subject = sfConfig::get('app_sf_guard_extra_plugin_subject_success', 'Password reset successfully');
+    $mailer = $this->getMailer();
+    $message = $mailer->compose(array($from => $fromName), array($to => $toName), $subject, $body);
+    $mailer->send($message);
   }
 
   /**
