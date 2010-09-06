@@ -50,20 +50,25 @@ This plugin provides additional modules for `sfGuardPlugin`: `ForgotPassword` an
         }
     
 
-  * Add method `retrieveByUsernameOrEmail` to get a user by email or username in `lib/model/sfGuardPlugin/sfGuardUserPeer.class`
+  * Add method `retrieveByUsernameOrEmail` to get a user by email or username in `lib/model/sfGuardPlugin/sfGuardUserPeer.class`.
+    The following is a working example, if you use sfGuardUserProfile:
 
         [php]
         public static function retrieveByUsernameOrEmail($usernameOrEmail, $isActive = true )
         {
           $c = new Criteria();
- 	        $c->add(self::USERNAME, $usernameOrEmail);
- 	        $c->add(self::EMAIL, $usernameOrEmail);
- 	        $c->add(self::IS_ACTIVE, $isActive);
+          $c->addJoin(self::ID, sfGuardUserProfilePeer::USER_ID, Criteria::LEFT_JOIN);
+          $c0 = $c->getNewCriterion(self::USERNAME, $usernameOrEmail);
+          $c1 = $c->getNewCriterion(sfGuardUserProfilePeer::EMAIL, $usernameOrEmail);
+          $c2 = $c->getNewCriterion(self::IS_ACTIVE, $isActive);
+          $c0->addOr($c1);
+          $c0->addAnd($c2);
+          $c->add($c0);
 
  	        return self::doSelectOne($c);
         }
 
-  * Clear you cache
+  * Clear your cache
 
         symfony cc
 
