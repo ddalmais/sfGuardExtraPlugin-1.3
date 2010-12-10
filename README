@@ -54,7 +54,7 @@ This plugin provides additional modules for `sfGuardPlugin`: `ForgotPassword` an
     The following is a working example, if you use sfGuardUserProfile:
 
         [php]
-        public static function retrieveByUsernameOrEmail($usernameOrEmail, $isActive = true )
+        public static function retrieveByUsernameOrEmail($usernameOrEmail, $isActive = true)
         {
           $c = new Criteria();
           $c->addJoin(self::ID, sfGuardUserProfilePeer::USER_ID, Criteria::LEFT_JOIN);

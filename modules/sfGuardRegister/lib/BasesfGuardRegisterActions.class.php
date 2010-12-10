@@ -50,7 +50,10 @@ class BasesfGuardRegisterActions extends sfActions
 
         $sfGuardUser = new sfGuardUser();
         $sfGuardUser->fromArray($values, BasePeer::TYPE_FIELDNAME);
-        $sfGuardUser->setEmail($values['email']);
+        if (isset($values['email']))
+        {
+          $sfGuardUser->setEmail($values['email']);
+        }
         $sfGuardUser->setIsActive(false);
         $sfGuardUser->save();
 

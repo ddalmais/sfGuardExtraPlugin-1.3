@@ -2,6 +2,7 @@
 <?php echo __('Hello') ?> <?php echo $sfGuardUser->getUsername() ?>,
 
 <?php echo __('Click here to confirm your registration') ?>
+
 <?php echo url_for('@sf_guard_register_confirm?key='.$sfGuardUser->getPassword().'&id='.$sfGuardUser->getId(), true) ?>
 
 
