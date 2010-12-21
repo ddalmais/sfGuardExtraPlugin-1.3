@@ -30,6 +30,7 @@ class sfGuardExtraRouting
     // forgot password
     if (in_array('sfGuardForgotPassword', $enabledModules))
     {
+      $r->prependRoute('sf_guard_user_set_password', new sfRoute('/set_password', array('module' => 'sfGuardForgotPassword', 'action' => 'userResetPassword')));
       $r->prependRoute('sf_guard_password', new sfRoute('/request_password', array('module' => 'sfGuardForgotPassword', 'action' => 'password')));
       $r->prependRoute('sf_guard_do_password', new sfRoute('/request_password/do', array('module' => 'sfGuardForgotPassword', 'action' => 'request_reset_password')));
       $r->prependRoute('sf_guard_forgot_password_reset_password', new sfRoute('/reset_password/:key/:id', array('module' => 'sfGuardForgotPassword', 'action' => 'reset_password')));

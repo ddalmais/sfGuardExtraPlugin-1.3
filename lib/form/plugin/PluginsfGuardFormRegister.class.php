@@ -10,8 +10,8 @@ class PluginsfGuardFormRegister extends BaseForm
   public function configure()
   {
     $this->setWidgets(array(
-      'username'         => new sfWidgetFormInput(),
-      'email'            => new sfWidgetFormInput(),
+      'username'         => new sfWidgetFormInputText(),
+      'email'            => new sfWidgetFormInputText(),
       'password'         => new sfWidgetFormInputPassword(),
       'password_confirm' => new sfWidgetFormInputPassword(),
     ));

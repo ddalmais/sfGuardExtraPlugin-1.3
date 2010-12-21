@@ -25,7 +25,7 @@ class BasesfGuardForgotPasswordActions extends sfActions
    */
   public function preExecute()
   {
-    if($this->getUser()->isAuthenticated())
+    if ($this->getUser()->isAuthenticated())
     {
       $this->redirect('@homepage');
     }
@@ -36,6 +36,7 @@ class BasesfGuardForgotPasswordActions extends sfActions
    *
    * Form for requesting instructions on how to reset your password
    *
+   * @param  sfRequest $request
    * @return void
    * @author Jonathan H. Wage
    */
@@ -73,8 +74,9 @@ class BasesfGuardForgotPasswordActions extends sfActions
 
   /**
    * executeRequest_reset_password
-   * 
+   *
    * @access public
+   * @param  sfRequest $request
    * @return void
    */
   public function executeRequest_reset_password(sfWebRequest $request)
@@ -82,34 +84,77 @@ class BasesfGuardForgotPasswordActions extends sfActions
   }
 
   /**
-   * executeReset_password 
+   * executeReset_password
    *
    * Reset the users password and e-mail it
-   * 
+   *  OR display a form to let user choose a new password
+   *
    * @access public
+   * @param  sfRequest $request
    * @return void
    */
   public function executeReset_password(sfWebRequest $request)
   {
+    if (sfConfig::get('app_sf_guard_extra_plugin_reset_type', 'set') == 'set')
+    {
+      $this->setPassword($request);
+    }
+    else
+    {
+      $this->askPassword($request);
+    }
+  }
+
+  /**
+   * executeUserResetpassword
+   *
+   * Reset password after user has been asked for
+   *
+   * @access public
+   * @param  sfRequest $request
+   * @return void
+   */
+  public function executeUserResetPassword(sfWebRequest $request)
+  {
+    $this->askPassword($request);
+  }
+
+  /**
+   * executeInvalid_key
+   *
+   * @access public
+   * @param  sfRequest $request
+   * @return void
+   */
+  public function executeInvalid_key(sfWebRequest $request)
+  {
+  }
+
+  /**
+   * Reset the users password and e-mail it
+   * @param sfRequest $request
+   */
+  protected function setPassword(sfWebRequest $request)
+  {
     $c = new Criteria();
     $c->add(sfGuardUserPeer::PASSWORD, $request->getParameter('key'));
     $c->add(sfGuardUserPeer::ID, $request->getParameter('id'));
- 	  $this->sfGuardUser = sfGuardUserPeer::doSelectOne($c);
-    $this->forwardUnless($this->sfGuardUser, 'sfGuardForgotPassword', 'invalid_key');
+ 	  $sfGuardUser = sfGuardUserPeer::doSelectOne($c);
+    $this->forwardUnless($sfGuardUser, 'sfGuardForgotPassword', 'invalid_key');
 
     $newPassword = time();
-    $this->sfGuardUser->setPassword($newPassword);
-    $this->sfGuardUser->save();
+    $sfGuardUser->setPassword($newPassword);
+    $sfGuardUser->save();
 
     $messageParams = array(
-      'sfGuardUser' => $this->sfGuardUser,
-      'password' => $newPassword
+      'sfGuardUser' => $sfGuardUser,
+      'password'    => $newPassword,
     );
     $body = $this->getComponent($this->getModuleName(), 'send_reset_password', $messageParams);
     $from = sfConfig::get('app_sf_guard_extra_plugin_mail_from', 'noreply@example.org');
     $fromName = sfConfig::get('app_sf_guard_extra_plugin_name_from', 'noreply');
-    $to = $this->sfGuardUser->getEmail();
-    $toName = $this->sfGuardUser->getUsername();
+    $to = $sfGuardUser->getEmail();
+    $toName = $sfGuardUser->getUsername();
     $subject = sfConfig::get('app_sf_guard_extra_plugin_subject_success', 'Password reset successfully');
     $mailer = $this->getMailer();
     $message = $mailer->compose(array($from => $fromName), array($to => $toName), $subject, $body);
@@ -117,12 +162,17 @@ class BasesfGuardForgotPasswordActions extends sfActions
   }
 
   /**
-   * executeInvalid_key
-   * 
-   * @access public
-   * @return void
+   * Ask user a new password and change it
+   * @param sfRequest $request
    */
-  public function executeInvalid_key(sfWebRequest $request)
+  protected function askPassword(sfWebRequest $request)
   {
+    $this->form = new sfGuardFormResetPassword(null, array('key' => $request->getParameter('key')));
+    if ($request->isMethod(sfRequest::POST) && $this->form->bindAndSave($request->getParameter($this->form->getName())))
+    {
+      $this->redirect('@sf_guard_signin');
+    }
+    $this->setTemplate('ask_password');
   }
+
 }

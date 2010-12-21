@@ -48,7 +48,7 @@ This plugin provides additional modules for `sfGuardPlugin`: `ForgotPassword` an
         {
           $this->getProfile()->setEmail($email);
         }
-    
+
 
   * Add method `retrieveByUsernameOrEmail` to get a user by email or username in `lib/model/sfGuardPlugin/sfGuardUserPeer.class`.
     The following is a working example, if you use sfGuardUserProfile:
@@ -67,6 +67,10 @@ This plugin provides additional modules for `sfGuardPlugin`: `ForgotPassword` an
 
  	        return self::doSelectOne($c);
         }
+
+  * You can select the preferred behavior of password reset: set the new password to a random
+    string and mail it to user, or let the user choose the new password. The first behavior
+    is default. Set `reset_type` to `ask` for the second one (see below).
 
   * Clear your cache
 
@@ -87,6 +91,7 @@ You can customize the following mail parameters:
         subject_complete: Request complete
         subject_request:  Request to reset password
         subject_success:  Password reset successfully
+        reset_type:       set # set to `ask` for asking (see above)
 
 # Validators
 
