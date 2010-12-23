@@ -10,14 +10,11 @@ class PluginsfGuardFormResetPassword extends BaseForm
   public function configure()
   {
     $this->setWidgets(array(
-      'key'              => new sfWidgetFormInputHidden(),
       'password'         => new sfWidgetFormInputPassword(),
       'password_confirm' => new sfWidgetFormInputPassword(),
     ));
-    $this->setDefault('key', $this->getOption('key'));
 
     $this->setValidators(array(
-      'key'              => new sfValidatorPropelChoice(array('model' => 'sfGuardUser', 'column' => 'password')),
       'password'         => new sfValidatorString(array('min_length' => 8), array('min_length' => 'Password is too short (%min_length% characters min).', 'required' => 'Your password is required.')),
       'password_confirm' => new sfValidatorString(array(), array('required' => 'Your password confirmation is required.')),
     ));
@@ -39,9 +36,7 @@ class PluginsfGuardFormResetPassword extends BaseForm
     $this->bind($values);
     if ($this->isValid())
     {
-      $c = new Criteria();
-      $c->add(sfGuardUserPeer::PASSWORD, $values['key']);
-      $user = sfGuardUserPeer::doSelectOne($c);
+      $user = sfGuardUserPeer::retrieveByPK($this->getOption('userid'));
       $user->setPassword($values['password']);
       $user->save();
 

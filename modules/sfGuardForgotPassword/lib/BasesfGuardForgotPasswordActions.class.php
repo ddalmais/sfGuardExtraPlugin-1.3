@@ -167,7 +167,16 @@ class BasesfGuardForgotPasswordActions extends sfActions
    */
   protected function askPassword(sfWebRequest $request)
   {
-    $this->form = new sfGuardFormResetPassword(null, array('key' => $request->getParameter('key')));
+    if (!is_null($key = $request->getParameter('key')))
+    {
+      $c = new Criteria();
+      $c->add(sfGuardUserPeer::ID, $request->getParameter('id'));
+      $c->add(sfGuardUserPeer::PASSWORD, $key);
+      $user = sfGuardUserPeer::doSelectOne($c);
+      $this->forward404Unless($user, 'user not found');
+      $this->getUser()->setAttribute('userid', $user->getId());
+    }
+    $this->form = new sfGuardFormResetPassword(null, array('userid' => $this->getUser()->getAttribute('userid')));
     if ($request->isMethod(sfRequest::POST) && $this->form->bindAndSave($request->getParameter($this->form->getName())))
     {
       $this->redirect('@sf_guard_signin');
